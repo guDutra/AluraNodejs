@@ -1,0 +1,37 @@
+Você já tentou enviar uma requisição POST, recebeu um status code 200 e quando checou seu banco de dados, percebeu que nada havia sido criado? Isso está totalmente ligado às operações assíncronas.
+
+Mas o que são operações assíncronas?
+
+Em JavaScript, as operações assíncronas são aquelas que não bloqueiam a execução do código, permitindo que outras operações possam ser executadas enquanto a primeira é processada em segundo plano. Isso é especialmente importante em operações de I/O (input/output, ou entrada/saída), como o acesso a bancos de dados, que podem levar um tempo considerável para serem concluídas.
+
+Existem algumas formas de lidar com operações assíncronas em JavaScript; durante o curso, utilizamos async/await. Essas palavras-chave permitem que a escrita e a leitura do código assíncrono fiquem muito similares ao código síncrono. O async/await é baseado em Promises, objetos que representam o resultado de uma operação assíncrona não concluída.
+
+E o banco de dados?
+
+Quando se trabalha com bancos de dados em JavaScript, é fundamental saber lidar com operações assíncronas e como os erros podem ser gerenciados. Se não tomarmos os cuidados adequados, podem ocorrer erros que afetam significativamente a eficiência e a confiabilidade da aplicação.
+
+O async/await é utilizado para fazer consultas e atualizações de forma assíncrona. Em vez de bloquear a execução do código enquanto o banco de dados está sendo acessado, a consulta é enviada em segundo plano e o código continua a ser executado enquanto espera pela resposta, por exemplo:
+
+Se tivermos o seguinte código:
+
+async function criaServidor(){
+await conectaBanco() //exibe no console “Banco conectado”
+…
+console.log(“Mensagem de teste”);
+}
+
+Ao chamar a função criaServidor() teremos a mensagem de teste sendo exibida antes da mensagem de “Banco conectado”, justamente porque o console.log é um método síncrono (ao menos que seja chamado dentro uma função “timer” como setTimeout), enquanto uma requisição ao banco pode levar um certo tempo para ser conectado e retornar uma mensagem. Assim, o Node.js coloca a requisição do banco em segundo plano, enquanto o console.log() é executado de forma síncrona.
+
+No caso de uma conexão com um banco de dados, o await irá “esperar” que essa conexão aconteça para enviar uma resposta via servidor. Por outro lado, sem a manipulação com async/await, a requisição irá chegar ao endpoint e poderá trazer uma resposta sem necessariamente se conectar com o banco de dados. Por exemplo, sua aplicação pode devolver um status code 200 mas nenhum dado ou erro informando que não houve conexão estabelecida com o banco de dados.
+
+Quando não são tratados corretamente, erros de conexão, de sintaxe ou de lógica podem ocorrer “silenciosamente” (ou seja, sem serem identificados pela aplicação). Além disso, a falta de manipulação adequada de erros pode fazer com que a aplicação continue a processar as requisições mesmo depois de uma falha ter ocorrido. Dessa forma, é recomendável utilizar técnicas como o uso de try/catch para capturar exceções em conjunto com o uso de async/await, pois isso permitirá que a aplicação lide com erros de forma mais eficiente e segura. Além disso, é importante utilizar bibliotecas que ofereçam suporte a operações assíncronas, como o Mongoose para acesso ao MongoDB.
+
+Outra causa comum de erros é a falta de gerenciamento adequado de promessas. Sem o uso de async/await ou outras técnicas de gerenciamento de promessas, é fácil perder o controle sobre quando as operações serão concluídas.
+
+Por exemplo, se uma operação de inserção em um banco de dados falhar e não for tratada corretamente, a aplicação poderá continuar executando outras operações de banco de dados com base em suposições incorretas sobre o estado do banco de dados. Isso pode levar a comportamentos inesperados, como a criação de dados duplicados ou a corrupção de dados existentes.
+
+Nesse sentido, é importante verificar se as operações de banco de dados foram concluídas com êxito antes de continuar com outras operações. Para isso, é possível utilizar o .then ou await, que aguardam a conclusão da operação antes de prosseguir para a próxima instrução.
+
+Em resumo, o gerenciamento adequado de exceções e promessas é fundamental para evitar erros em operações de banco de dados com JavaScript. Usando palavras-chave como try/catch e async/await, as pessoas desenvolvedoras podem criar aplicativos mais eficientes e confiáveis, minimizando o risco de comportamentos inesperados.
+
+Para se aprofundar no assunto, você pode estudar mais sobre Promises em JavaScript, além de pesquisar sobre bibliotecas de acesso a bancos de dados que deem suporte a operações assíncronas e exemplos de código utilizando async/await para acessar o banco de dados.
